@@ -1,3 +1,5 @@
+import * as R from 'ramda';
+
 const MSGS = {
     'SHOW_FORM' : 'SHOW_FORM',
     'QUESTION_INPUT' : 'QUESTION_INPUT',
@@ -26,7 +28,7 @@ export function answerInputMsg(answer) {
     }
 }
 
-const saveFormMsg = {
+export const saveFormMsg = {
     type: MSGS.SAVE_FORM
 }
 
@@ -39,11 +41,21 @@ function update(model, action) {
         case MSGS.QUESTION_INPUT: {
             const {question} = action;
             return {...model, question}
-
         }
         case MSGS.ANSWER_INPUT: {
             const {answer} = action;
             return {...model, answer}
+        }
+        case MSGS.SAVE_FORM: {
+            const {flashcards, current_id, question, answer, rank} = model;
+            const newId = R.pipe(R.defaultTo(0), id => id+1)(current_id);
+            return {...model, flashcards: [
+                ...flashcards,
+                {   id: newId,
+                    question,
+                    answer,
+                    rank}
+            ]}
         }
         default:
             return model;

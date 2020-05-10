@@ -1,12 +1,15 @@
 import {h} from 'virtual-dom';
 import hh from 'hyperscript-helpers';
 
-import {showFormMsg, questionInputMsg, answerInputMsg} from './Update';
+import {showFormMsg, questionInputMsg, answerInputMsg, saveFormMsg} from './Update';
 
 const {div, pre, button, i, h1, label, textarea} = hh(h);
 
 function displayFlashCards(dispatch, model) {
-
+    const {flashcards} = model;
+    for(let flashcard of flashcards) {
+        console.log(value);
+    };
 }
 
 function displayLabel(labelText, value, oninput) {
@@ -34,7 +37,7 @@ function displayForm(dispatch, model) {
         button({
             className: 'ba b--gray pv1 ph3 bg-moon-gray grow pointer f4 white',
             type: 'button',
-            onclick: e => dispatch(saveFormMsg())
+            onclick: e => dispatch(saveFormMsg)
         }, 'Save')
     ]);
 }
@@ -58,6 +61,7 @@ function view (dispatch, model) {
         h1({className: 'f1 bb'}, 'Flashcard study'),
         displayCreateButton(e=>dispatch(showFormMsg(true)), 'Add Flashcard'),
         displayForm(dispatch, model),
+        displayFlashCards(dispatch, model),
         pre(JSON.stringify(model, null, 2))
     ]);
 }
