@@ -36,6 +36,15 @@ function update(model, action) {
             const {show_form} = action;
             return {...model, show_form}
         }
+        case MSGS.QUESTION_INPUT: {
+            const {question} = action;
+            return {...model, question}
+
+        }
+        case MSGS.ANSWER_INPUT: {
+            const {answer} = action;
+            return {...model, answer}
+        }
         default:
             return model;
     }

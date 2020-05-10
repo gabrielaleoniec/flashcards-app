@@ -3,18 +3,19 @@ import hh from 'hyperscript-helpers';
 
 import {showFormMsg, questionInputMsg, answerInputMsg} from './Update';
 
-const {div, pre, button, i, h1, label, input, textarea} = hh(h);
+const {div, pre, button, i, h1, label, textarea} = hh(h);
 
 function displayFlashCards(dispatch, model) {
 
 }
 
-function displayLabel(labelText, value, onchange) {
+function displayLabel(labelText, value, oninput) {
     return label({className: 'db w-100 mv2'}, [
         labelText,
         textarea({
             className: 'pv1 ph2 w-100 mv1',
-            value
+            value,
+            oninput
         })
     ])
 }
@@ -23,7 +24,7 @@ function displayForm(dispatch, model) {
     if(!model.show_form) {
         return null;
     }
-    return div({className: 'ba bg-yellow mv3 ph3 pv2 shadow-5'}, [
+    return div({className: 'ba bg-yellow mw6 mv3 ph3 pv2 shadow-5'}, [
         i({
             className: 'fa fa-close fa-2x fr grow pointer',
             onclick: e => dispatch(showFormMsg(false))
@@ -31,7 +32,7 @@ function displayForm(dispatch, model) {
         displayLabel('Question', model.question, e => dispatch(questionInputMsg(e.target.value))),
         displayLabel('Answer', model.answer, e => dispatch(answerInputMsg(e.target.value))),
         button({
-            className: 'pv1 ph3 bg-moon-gray grow pointer f4 white',
+            className: 'ba b--gray pv1 ph3 bg-moon-gray grow pointer f4 white',
             type: 'button',
             onclick: e => dispatch(saveFormMsg())
         }, 'Save')
@@ -41,7 +42,7 @@ function displayForm(dispatch, model) {
 function displayCreateButton(onclick, text) {
     return button(
         {
-            className: 'pv1 ph3 bg-green grow pointer f3 white',
+            className: 'pv1 ba b--dark-green ph3 bg-green grow pointer f3 white',
             type: 'button',
             onclick
         },
