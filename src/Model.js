@@ -1,8 +1,9 @@
 const initModel = {
+    show_form: false,
     question: '',
     answer: '',
     rank: null,
-    currentId: null,
+    current_id: null,
     flashcards: [],
 }
 
