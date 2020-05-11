@@ -21,10 +21,10 @@ export function questionInputMsg(question) {
     }
 }
 
-export function answerInputMsg(answer) {
+export function answerInputMsg(answear) {
     return {
         type: MSGS.ANSWER_INPUT,
-        answer
+        answear
     }
 }
 
@@ -43,18 +43,22 @@ function update(model, action) {
             return {...model, question}
         }
         case MSGS.ANSWER_INPUT: {
-            const {answer} = action;
-            return {...model, answer}
+            const {answear} = action;
+            return {...model, answear}
         }
         case MSGS.SAVE_FORM: {
-            const {flashcards, current_id, question, answer, rank} = model;
+            const {flashcards, current_id, question, answear, rank} = model;
             const newId = R.pipe(R.defaultTo(0), id => id+1)(current_id);
+            if (!question || !answear) {
+                return model;
+            }
             return {...model, flashcards: [
                 ...flashcards,
                 {   id: newId,
                     question,
-                    answer,
-                    rank}
+                    answear,
+                    rank,
+                    show_answer: false}
             ]}
         }
         default:

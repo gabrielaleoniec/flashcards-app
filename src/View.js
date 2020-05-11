@@ -2,23 +2,55 @@ import {h} from 'virtual-dom';
 import hh from 'hyperscript-helpers';
 
 import {showFormMsg, questionInputMsg, answerInputMsg, saveFormMsg} from './Update';
+import app from './App';
 
-const {div, pre, button, i, h1, label, textarea} = hh(h);
+const {div, pre, button, i, h1, label, textarea, a} = hh(h);
+
+function showAnswear(flashcard) {
+    if(!flashcard.show_answear) {
+        return a('Show answear');
+    }
+
+    return div(
+        [
+            flashcard.answear,
+            a('Show answear')
+        ]
+    )
+}
+
+function showFlashCard(flashcard) {
+    return div({
+        className: 'ba bg-yellow mw6 mv3 ph3 pv2 shadow-5'
+    },
+    [
+        i({
+            className: 'fa fa-close fa-2x fr grow pointer',
+            onclick: e => dispatch(showFormMsg(false))
+        }),
+        a('Question'),
+        div({
+            className: 'mv2 f3'
+        }, flashcard.question),
+        showAnswear(flashcard)
+    ]
+    )
+}
 
 function displayFlashCards(dispatch, model) {
     const {flashcards} = model;
-    for(let flashcard of flashcards) {
-        console.log(value);
-    };
+    return div({},
+        flashcards.map(flashcard => showFlashCard(flashcard))
+    )
 }
 
-function displayLabel(labelText, value, oninput) {
+function displayLabel(labelText, value, onchange) {
     return label({className: 'db w-100 mv2'}, [
         labelText,
         textarea({
             className: 'pv1 ph2 w-100 mv1',
             value,
-            oninput
+            onchange
         })
     ])
 }
