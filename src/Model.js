@@ -5,6 +5,7 @@ const initModel = {
     rank: null,
     current_id: null,
     flashcards: [],
+    next_id: 0
 }
 
 export default initModel;

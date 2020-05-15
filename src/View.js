@@ -1,7 +1,7 @@
 import {h} from 'virtual-dom';
 import hh from 'hyperscript-helpers';
 
-import {showFormMsg, questionInputMsg, answerInputMsg, saveFormMsg} from './Update';
+import {showFormMsg, questionInputMsg, answerInputMsg, saveFormMsg, deleteFlashcardMsg, editFlashcardMsg} from './Update';
 import app from './App';
 
 const {div, pre, button, i, h1, label, textarea, a} = hh(h);
@@ -19,19 +19,26 @@ function showAnswear(flashcard) {
     )
 }
 
-function showFlashCard(flashcard) {
+function showFlashCard(dispatch, flashcard) {
+    const {id} = flashcard;
     return div({
         className: 'ba bg-yellow mw6 mv3 ph3 pv2 shadow-5'
     },
     [
         i({
-            className: 'fa fa-close fa-2x fr grow pointer',
-            onclick: e => dispatch(showFormMsg(false))
+            className: 'fa fa-trash fa-2x fr grow pointer',
+            onclick: e => dispatch(deleteFlashcardMsg(id))
         }),
         a('Question'),
         div({
             className: 'mv2 f3'
-        }, flashcard.question),
+        }, [
+            flashcard.question,
+            i({
+                className: 'fa fa-edit ml2 grow pointer',
+                onclick: e => dispatch(editFlashcardMsg(id))
+            })
+        ]),
         showAnswear(flashcard)
     ]
     )
@@ -40,7 +47,7 @@ function showFlashCard(flashcard) {
 function displayFlashCards(dispatch, model) {
     const {flashcards} = model;
     return div({},
-        flashcards.map(flashcard => showFlashCard(flashcard))
+        flashcards.map(flashcard => showFlashCard(dispatch, flashcard))
     )
 }
 

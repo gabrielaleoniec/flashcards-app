@@ -4,7 +4,9 @@ const MSGS = {
     'SHOW_FORM' : 'SHOW_FORM',
     'QUESTION_INPUT' : 'QUESTION_INPUT',
     'ANSWER_INPUT' : 'ANSWER_INPUT',
-    'SAVE_FORM' : 'SAVE_FORM'
+    'SAVE_FORM' : 'SAVE_FORM',
+    'DELETE_FLASHCARD' : 'DELETE_FLASHCARD',
+    'EDIT_FLASHCARD' : 'EDIT_FLASHCARD'
 }
 
 export function showFormMsg(show_form) {
@@ -32,6 +34,39 @@ export const saveFormMsg = {
     type: MSGS.SAVE_FORM
 }
 
+export function deleteFlashcardMsg(deleteId) {
+    return {
+        type: MSGS.DELETE_FLASHCARD,
+        deleteId
+    }
+}
+
+export function editFlashcardMsg(editId) {
+    return {
+        type: MSGS.EDIT_FLASHCARD,
+        editId
+    }
+}
+
+function addFlashcard(model) {
+    const {next_id, flashcards, question, answear, rank} = model;
+            if (!question || !answear) {
+                return model;
+            }
+    const flashcard = {
+        id: next_id,
+        question,
+        answear,
+        rank
+    }
+    return {...model,
+        show_form: false,
+        question: '',
+        answear: '',
+        next_id: next_id + 1,
+        flashcards: [...flashcards, flashcard]}
+}
+
 function update(model, action) {
     switch (action.type) {
         case MSGS.SHOW_FORM: {
@@ -46,20 +81,20 @@ function update(model, action) {
             const {answear} = action;
             return {...model, answear}
         }
+        case MSGS.DELETE_FLASHCARD: {
+            const {deleteId} = action;
+            const {flashcards} = model;
+            const updatedFlashcards = flashcards.filter(f => {if(f.id !== deleteId) return f});
+            return {...model, flashcards: updatedFlashcards}
+        }
+        case MSGS.EDIT_FLASHCARD: {
+            const {editId} = action;
+            const {flashcards} = model;
+
+            return {...model, flashcards: updatedFlashcards}
+        }
         case MSGS.SAVE_FORM: {
-            const {flashcards, current_id, question, answear, rank} = model;
-            const newId = R.pipe(R.defaultTo(0), id => id+1)(current_id);
-            if (!question || !answear) {
-                return model;
-            }
-            return {...model, flashcards: [
-                ...flashcards,
-                {   id: newId,
-                    question,
-                    answear,
-                    rank,
-                    show_answer: false}
-            ]}
+            return addFlashcard(model);
         }
         default:
             return model;
