@@ -25,58 +25,67 @@ function displayAnswear(dispatch, flashcard) {
 
     return div(
         [
-            a({
+            flashcard.edit_mode?'':a({
                 className: 'underline pointer',
                 onclick: e => dispatch(changeFlashcardDisplayMsg(flashcard.id))
             }, 'Hide answear'),
-            div({ className: 'mv2' },
-                flashcard.edit_mode?textarea(flashcard.answear):flashcard.answear),
-            div({ className: 'flex justify-between mv2' }, [
-                answearButton('orange', 'Bad', e => dispatch(changeFlashcardRankMsg(flashcard.id, flashcard.rank))),
-                answearButton('light-purple', 'Good', e => dispatch(changeFlashcardRankMsg(flashcard.id, flashcard.rank + 1))),
-                answearButton('green', 'Great', e => dispatch(changeFlashcardRankMsg(flashcard.id, flashcard.rank + 2)))
-            ])
+            div({ className: 'mv2 f3 w-100' },
+                flashcard.edit_mode?textarea({className: 'w-100'}, flashcard.answear):flashcard.answear),
+            flashcard.edit_mode?
+            displayButton(dispatch, 'gray', 'Save', showFormMsg(true)):
+                div({ className: 'flex justify-between mv2' }, [
+                    displayButton(dispatch, 'orange', 'Bad', changeFlashcardRankMsg(flashcard.id, flashcard.rank)),
+                    displayButton(dispatch, 'light-purple', 'Good', changeFlashcardRankMsg(flashcard.id, flashcard.rank + 1)),
+                    displayButton(dispatch, 'green', 'Great', changeFlashcardRankMsg(flashcard.id, flashcard.rank + 2)),
+                    ]
+                ),
         ]
     )
 }
 
 function displayQuestion(dispatch, flashcard) {
     if(flashcard.edit_mode) {
-        return textarea(flashcard.question);
+        return textarea({className: 'w-100'}, flashcard.question);
     }
-    return flashcard.question;
+    return div(
+        {className: ''},
+        [
+            flashcard.question,
+            i({
+                className: 'fa fa-edit ml2 grow pointer',
+                onclick: e => dispatch(editFlashcardMsg(flashcard.id))
+            })
+        ]
+    );
 }
 
-function answearButton(color, label, onclick) {
+function displayButton(dispatch, color, label, func) {
     return button(
         {
-            className: 'pv1 ba b--dark-green ph3 bg-' + color + ' grow pointer f3 white',
-            onclick
+            className: 'pv1 ba b--dark-gray ph3 bg-' + color + ' grow pointer f3 white',
+            type: 'button',
+            onclick: e => dispatch(func)
         },
         label,
     );
 }
 
 function displayFlashCard(dispatch, flashcard) {
-    const { id } = flashcard;
     return div({
         className: 'ba bg-yellow mw6 mv3 ph3 pv2 shadow-5'
     },
         [
             i({
                 className: 'fa fa-trash fa-2x fr grow pointer',
-                onclick: e => dispatch(deleteFlashcardMsg(id))
+                onclick: e => dispatch(deleteFlashcardMsg(flashcard.id))
             }),
             a('Question'),
-            div({
-                className: 'mv2 f3'
-            }, [
+            div(
+                {
+                    className: 'mv2 f3 w-100'
+                },
                 displayQuestion(dispatch, flashcard),
-                i({
-                    className: 'fa fa-edit ml2 grow pointer',
-                    onclick: e => dispatch(editFlashcardMsg(id))
-                })
-            ]),
+            ),
             displayAnswear(dispatch, flashcard)
         ]
     )
@@ -111,32 +120,18 @@ function displayForm(dispatch, model) {
         }),
         displayLabel('Question', model.question, e => dispatch(questionInputMsg(e.target.value))),
         displayLabel('Answer', model.answer, e => dispatch(answerInputMsg(e.target.value))),
-        button({
-            className: 'ba b--gray pv1 ph3 bg-moon-gray grow pointer f4 white',
-            type: 'button',
-            onclick: e => dispatch(saveFormMsg)
-        }, 'Save')
+        displayButton(dispatch, 'moon-gray', 'Save', saveFormMsg),
     ]);
 }
 
-function displayCreateButton(onclick, text) {
-    return button(
-        {
-            className: 'pv1 ba b--dark-green ph3 bg-green grow pointer f3 white',
-            type: 'button',
-            onclick
-        },
-        [i({
-            className: 'fa fa-plus mr2'
-        }),
-            text]
-    )
-}
-
 function view(dispatch, model) {
+    const buttonText = [i({
+        className: 'fa fa-plus mr2'
+    }),
+    'Add Flashcard'];
     return div({ className: 'w-70 center sans-serif' }, [
         h1({ className: 'f1 bb' }, 'Flashcard study'),
-        displayCreateButton(e => dispatch(showFormMsg(true)), 'Add Flashcard'),
+        displayButton(dispatch, 'dark-green', buttonText, showFormMsg(true)),
         displayForm(dispatch, model),
         displayFlashCards(dispatch, model),
         pre(JSON.stringify(model, null, 2))

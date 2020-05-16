@@ -104,6 +104,21 @@ function showHideFlashcard(model, id) {
     return {...model, flashcards}
 }
 
+function editFlashcard(model, id) {
+    const flashcards = model.flashcards.map(
+        f => {
+            if(f.id === id) {
+                const {edit_mode} = f;
+                const {show_answear} = f;
+                return {...f, edit_mode: (!edit_mode), show_answear: true}
+            }
+            return f;
+        }
+    );
+    return {...model, flashcards}
+}
+
+
 function update(model, action) {
     switch (action.type) {
         case MSGS.SHOW_FORM: {
@@ -126,7 +141,7 @@ function update(model, action) {
         }
         case MSGS.EDIT_FLASHCARD: {
             const {editId} = action;
-            return updateFlashcard(model, editId);
+            return editFlashcard(model, editId);
         }
         case MSGS.SHOWHIDE_FLASHCARD: {
             const {showHideId} = action;
