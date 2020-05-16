@@ -11,11 +11,12 @@ import {
     changeFlashcardDisplayMsg,
     changeFlashcardRankMsg
 } from './Update';
-import app from './App';
 
 const { div, pre, button, i, h1, label, textarea, a } = hh(h);
 
 function displayAnswear(dispatch, flashcard) {
+    const dButton = displayButton.bind(null, dispatch);
+    const chRank = changeFlashcardRankMsg.bind(null, flashcard.id);
     if (!flashcard.show_answear) {
         return a({
             className: 'underline pointer',
@@ -32,11 +33,11 @@ function displayAnswear(dispatch, flashcard) {
             div({ className: 'mv2 f3 w-100' },
                 flashcard.edit_mode?textarea({className: 'w-100'}, flashcard.answear):flashcard.answear),
             flashcard.edit_mode?
-            displayButton(dispatch, 'gray', 'Save', showFormMsg(true)):
+            dButton('gray', 'Save', showFormMsg(true)):
                 div({ className: 'flex justify-between mv2' }, [
-                    displayButton(dispatch, 'orange', 'Bad', changeFlashcardRankMsg(flashcard.id, flashcard.rank)),
-                    displayButton(dispatch, 'light-purple', 'Good', changeFlashcardRankMsg(flashcard.id, flashcard.rank + 1)),
-                    displayButton(dispatch, 'green', 'Great', changeFlashcardRankMsg(flashcard.id, flashcard.rank + 2)),
+                    dButton('orange', 'Bad', chRank(flashcard.rank)),
+                    dButton('light-purple', 'Good', chRank(flashcard.rank + 1)),
+                    dButton('green', 'Great', chRank(flashcard.rank + 2)),
                     ]
                 ),
         ]
