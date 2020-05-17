@@ -12,16 +12,23 @@ import {
     changeFlashcardRankMsg
 } from './Update';
 
-const { div, pre, button, i, h1, label, textarea, a } = hh(h);
+const { div, pre, button, i, h1, h2, label, textarea, a } = hh(h);
 
-function displayAnswear(dispatch, flashcard) {
+function dLabel(label) {
+    return h2(
+        {className: 'f4 mt2 mb1 p0'},
+        label
+    )
+}
+
+function displayAnswer(dispatch, flashcard) {
     const dButton = displayButton.bind(null, dispatch);
     const chRank = changeFlashcardRankMsg.bind(null, flashcard.id);
-    if (!flashcard.show_answear) {
+    if (!flashcard.show_answer) {
         return a({
             className: 'underline pointer',
             onclick: e => dispatch(changeFlashcardDisplayMsg(flashcard.id))
-        }, 'Show answear');
+        }, 'Show answer');
     }
 
     return div(
@@ -29,11 +36,10 @@ function displayAnswear(dispatch, flashcard) {
             flashcard.edit_mode?'':a({
                 className: 'underline pointer',
                 onclick: e => dispatch(changeFlashcardDisplayMsg(flashcard.id))
-            }, 'Hide answear'),
-            div({ className: 'mv2 f3 w-100' },
-                flashcard.edit_mode?textarea({className: 'w-100'}, flashcard.answear):flashcard.answear),
+            }, 'Hide answer'),
+            flashcard.edit_mode?displayField(dLabel('Answer'), flashcard.answer, e => dispatch(answerInputMsg(e.target.value))):div({className: 'w-100 mv2 f3'}, flashcard.answer),
             flashcard.edit_mode?
-            dButton('gray', 'Save', showFormMsg(true)):
+            dButton('moon-gray', 'Save', saveFormMsg(flashcard.id)):
                 div({ className: 'flex justify-between mv2' }, [
                     dButton('orange', 'Bad', chRank(flashcard.rank)),
                     dButton('light-purple', 'Good', chRank(flashcard.rank + 1)),
@@ -46,11 +52,11 @@ function displayAnswear(dispatch, flashcard) {
 
 function displayQuestion(dispatch, flashcard) {
     if(flashcard.edit_mode) {
-        return textarea({className: 'w-100'}, flashcard.question);
+        return displayField(dLabel('Question'), flashcard.question, e => dispatch(questionInputMsg(e.target.value)))
     }
     return div(
-        {className: ''},
-        [
+        {className: 'f3 w-100 mv2'},
+        [   dLabel('Question'),
             flashcard.question,
             i({
                 className: 'fa fa-edit ml2 grow pointer',
@@ -80,14 +86,8 @@ function displayFlashCard(dispatch, flashcard) {
                 className: 'fa fa-trash fa-2x fr grow pointer',
                 onclick: e => dispatch(deleteFlashcardMsg(flashcard.id))
             }),
-            a('Question'),
-            div(
-                {
-                    className: 'mv2 f3 w-100'
-                },
-                displayQuestion(dispatch, flashcard),
-            ),
-            displayAnswear(dispatch, flashcard)
+            displayQuestion(dispatch, flashcard),
+            displayAnswer(dispatch, flashcard)
         ]
     )
 }
@@ -99,9 +99,9 @@ function displayFlashCards(dispatch, model) {
     )
 }
 
-function displayLabel(labelText, value, onchange) {
+function displayField(labelText, value, onchange) {
     return label({ className: 'db w-100 mv2' }, [
-        labelText,
+        dLabel(labelText),
         textarea({
             className: 'pv1 ph2 w-100 mv1',
             value,
@@ -119,9 +119,9 @@ function displayForm(dispatch, model) {
             className: 'fa fa-close fa-2x fr grow pointer',
             onclick: e => dispatch(showFormMsg(false))
         }),
-        displayLabel('Question', model.question, e => dispatch(questionInputMsg(e.target.value))),
-        displayLabel('Answer', model.answer, e => dispatch(answerInputMsg(e.target.value))),
-        displayButton(dispatch, 'moon-gray', 'Save', saveFormMsg),
+        displayField(dLabel('Question'), model.question, e => dispatch(questionInputMsg(e.target.value))),
+        displayField(dLabel('Answer'), model.answer, e => dispatch(answerInputMsg(e.target.value))),
+        displayButton(dispatch, 'moon-gray', 'Save', saveFormMsg(null)),
     ]);
 }
 

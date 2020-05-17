@@ -25,15 +25,18 @@ export function questionInputMsg(question) {
     }
 }
 
-export function answerInputMsg(answear) {
+export function answerInputMsg(answer) {
     return {
         type: MSGS.ANSWER_INPUT,
-        answear
+        answer
     }
 }
 
-export const saveFormMsg = {
-    type: MSGS.SAVE_FORM
+export function saveFormMsg(id) {
+    return {
+        type: MSGS.SAVE_FORM,
+        id
+    }
 }
 
 export function deleteFlashcardMsg(deleteId) {
@@ -66,37 +69,53 @@ export function changeFlashcardDisplayMsg(showHideId) {
 }
 
 function addFlashcard(model) {
-    const {next_id, flashcards, question, answear, rank} = model;
-    if (!question || !answear) {
+    const {next_id, flashcards, question, answer, rank} = model;
+    if (!question || !answer) {
         return model;
     }
 
     const flashcard = {
         id: next_id,
         question,
-        answear,
-        show_answear: false,
+        answer,
+        show_answer: false,
         edit_mode: false,
         rank
     }
     return {...model,
         show_form: false,
         question: '',
-        answear: '',
+        answer: '',
         next_id: next_id + 1,
         flashcards: [...flashcards, flashcard]}
 }
 
-function updateFlashcard(model) {
+function updateFlashcard(model, id) {
+    const {question, answer, flashcards} = model;
 
+
+    const updatedFlashcards = flashcards.map(f => {
+            if(f.id === id) {
+                return {...f, question, answer, edit_mode: false};
+            }
+            return f;
+        }
+    );
+
+    return {
+        show_form: false,
+        question: '',
+        answer: '',
+        flashcards: updatedFlashcards,
+    };
 }
 
 function showHideFlashcard(model, id) {
     const flashcards = model.flashcards.map(
         f => {
             if(f.id === id) {
-                const {show_answear} = f;
-                return {...f, show_answear: (!show_answear)}
+                const {show_answer} = f;
+                return {...f, show_answer: (!show_answer)}
             }
             return f;
         }
@@ -105,17 +124,19 @@ function showHideFlashcard(model, id) {
 }
 
 function editFlashcard(model, id) {
+
     const flashcards = model.flashcards.map(
         f => {
             if(f.id === id) {
                 const {edit_mode} = f;
-                const {show_answear} = f;
-                return {...f, edit_mode: (!edit_mode), show_answear: true}
+                return {...f, edit_mode: (!edit_mode), show_answer: true}
             }
             return f;
         }
     );
-    return {...model, flashcards}
+    const {question, answer} = model.flashcards[id];
+
+    return {...model, question: question, answer: answer, flashcards}
 }
 
 
@@ -130,8 +151,9 @@ function update(model, action) {
             return {...model, question}
         }
         case MSGS.ANSWER_INPUT: {
-            const {answear} = action;
-            return {...model, answear}
+            console.log('Answer input');
+            const {answer} = action;
+            return {...model, answer}
         }
         case MSGS.DELETE_FLASHCARD: {
             const {deleteId} = action;
@@ -148,7 +170,12 @@ function update(model, action) {
             return showHideFlashcard(model, showHideId);
         }
         case MSGS.SAVE_FORM: {
-            return addFlashcard(model);
+            const {id} = action;
+            if(id === null) {
+                return addFlashcard(model);
+            }
+
+            return updateFlashcard(model, id);
         }
         default:
             return model;

@@ -3,9 +3,8 @@ const initModel = {
     question: '',
     answer: '',
     rank: null,
-    current_id: null,
-    flashcards: [],
-    next_id: 0
+    next_id: 0,
+    flashcards: []
 }
 
 export default initModel;
