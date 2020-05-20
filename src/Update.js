@@ -110,6 +110,28 @@ function updateFlashcard(model, id) {
     };
 }
 
+function updateFlashcardRank(model, id, rank) {
+    const {flashcards} = model;
+
+    const updatedFlashcards = flashcards.map(f => {
+            if(f.id === id) {
+                return {...f, rank, edit_mode: false};
+            }
+            return f;
+        }
+    );
+
+    return {
+        ...model,
+        show_form: false,
+        rank: null,
+        flashcards: R.sortWith([
+            R.ascend(R.prop('rank')),
+            R.descend(R.prop('id'))
+        ])(updatedFlashcards),
+    };
+}
+
 function showHideFlashcard(model, id) {
     const flashcards = model.flashcards.map(
         f => {
@@ -129,7 +151,7 @@ function editFlashcard(model, id) {
         f => {
             if(f.id === id) {
                 const {edit_mode} = f;
-                return {...f, edit_mode: (!edit_mode), show_answer: true}
+                return {...f, edit_mode: (!edit_mode), show_answer: false}
             }
             return f;
         }
@@ -151,7 +173,6 @@ function update(model, action) {
             return {...model, question}
         }
         case MSGS.ANSWER_INPUT: {
-            console.log('Answer input');
             const {answer} = action;
             return {...model, answer}
         }
@@ -176,6 +197,10 @@ function update(model, action) {
             }
 
             return updateFlashcard(model, id);
+        }
+        case MSGS.CHANGE_RANK: {
+            const {id, rank} = action;
+            return updateFlashcardRank(model, id, rank);
         }
         default:
             return model;

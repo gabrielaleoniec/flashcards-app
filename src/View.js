@@ -41,7 +41,7 @@ function displayAnswer(dispatch, flashcard) {
             flashcard.edit_mode?
             dButton('moon-gray', 'Save', saveFormMsg(flashcard.id)):
                 div({ className: 'flex justify-between mv2' }, [
-                    dButton('orange', 'Bad', chRank(flashcard.rank)),
+                    dButton('orange', 'Bad', chRank(flashcard.rank + 0)),
                     dButton('light-purple', 'Good', chRank(flashcard.rank + 1)),
                     dButton('green', 'Great', chRank(flashcard.rank + 2)),
                     ]
