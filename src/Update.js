@@ -90,17 +90,16 @@ function addFlashcard(model) {
         flashcards: [...flashcards, flashcard]}
 }
 
+const updateCards = R.curry((updateCard, card) => {
+    if (updateCard.id === card.id) {
+      return { ...card, ...updateCard };
+    }
+    return card;
+  });
+
 function updateFlashcard(model, id) {
     const {question, answer, flashcards} = model;
-
-
-    const updatedFlashcards = flashcards.map(f => {
-            if(f.id === id) {
-                return {...f, question, answer, edit_mode: false};
-            }
-            return f;
-        }
-    );
+    const updatedFlashcards = flashcards.map(updateCards({id, question, answer, edit_mode: false, show_answer:false}));
 
     return {
         show_form: false,
@@ -112,14 +111,7 @@ function updateFlashcard(model, id) {
 
 function updateFlashcardRank(model, id, rank) {
     const {flashcards} = model;
-
-    const updatedFlashcards = flashcards.map(f => {
-            if(f.id === id) {
-                return {...f, rank, edit_mode: false};
-            }
-            return f;
-        }
-    );
+    const updatedFlashcards = flashcards.map(updateCards({id, rank, edit_mode: false}));
 
     return {
         ...model,
@@ -146,12 +138,11 @@ function showHideFlashcard(model, id) {
 }
 
 function editFlashcard(model, id) {
-
     const flashcards = model.flashcards.map(
         f => {
             if(f.id === id) {
                 const {edit_mode} = f;
-                return {...f, edit_mode: (!edit_mode), show_answer: false}
+                return {...f, edit_mode: (!edit_mode), show_answer: true}
             }
             return f;
         }
@@ -179,6 +170,7 @@ function update(model, action) {
         case MSGS.DELETE_FLASHCARD: {
             const {deleteId} = action;
             const {flashcards} = model;
+            //R.reject(R.propEq('id', id), flashcards);
             const updatedFlashcards = flashcards.filter(f => {if(f.id !== deleteId) return f});
             return {...model, flashcards: updatedFlashcards}
         }
